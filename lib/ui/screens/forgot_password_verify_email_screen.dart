@@ -1,19 +1,18 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:task_manager2/ui/screens/forgot_password_verify_email_screen.dart';
+import 'package:task_manager2/ui/screens/pin_verification_screen.dart';
 import 'package:task_manager2/ui/screens/signup_screen.dart';
 import 'package:task_manager2/ui/widgets/screen_%20background.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class ForgotPasswordVerifyEmail extends StatefulWidget {
+  const ForgotPasswordVerifyEmail({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<ForgotPasswordVerifyEmail> createState() => _ForgotPasswordVerifyEmailState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _ForgotPasswordVerifyEmailState extends State<ForgotPasswordVerifyEmail> {
   final TextEditingController _emailTEController = TextEditingController();
-  final TextEditingController _passwordTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -30,42 +29,52 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   const SizedBox(height: 80),
                   Text(
-                    "Get Started With",
+                    "Your Email Address",
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
+                  const SizedBox(height: 5),
+
+                  Text(
+                    "A 6 digit verification code will be sent to your email address",
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey),
+                  ),
                   const SizedBox(height: 20),
+
                   TextFormField(
                     controller: _emailTEController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(hintText: "Email"),
                   ),
-                  const SizedBox(height: 10),
-
-                  TextFormField(
-                    controller: _passwordTEController,
-                    obscureText: true,
-                    decoration: InputDecoration(hintText: "Password"),
-                  ),
-
                   const SizedBox(height: 30),
-
+          
                   FilledButton(
-                    onPressed: () {},
+                    onPressed: _onTapEmailAddressButton,
                     child: Icon((Icons.arrow_forward_ios_outlined)),
                   ),
-
+          
                   const SizedBox(height: 30),
-
                   Center(
                     child: Column(
                       children: [
-                        TextButton(
-                          onPressed: _onTapForgotPasswordButton,
-                          child: Text(
-                            "Forgot Password?",
-                            style: TextStyle(color: Colors.grey),
+                        const SizedBox(height: 20,),
+
+                        RichText(
+                          text: TextSpan(
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            text: "Have an account? ",
+                            children: [
+                              TextSpan(
+                                  text: "Log In",
+                                  style: TextStyle(color: Colors.green),
+                                  recognizer: TapGestureRecognizer()..onTap = _onTapLoginButton
+                              ),
+                            ],
                           ),
                         ),
+                        SizedBox(height: 20,),
                         RichText(
                           text: TextSpan(
                             style: TextStyle(
@@ -77,8 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               TextSpan(
                                 text: "Sign Up",
                                 style: TextStyle(color: Colors.green),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = _onTapSignupButton,
+                                recognizer: TapGestureRecognizer()..onTap = _onTapSignupButton
                               ),
                             ],
                           ),
@@ -94,25 +102,21 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-
   void _onTapSignupButton() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => SignupScreen()),
-    );
+    Navigator.push(context, MaterialPageRoute(builder: (context) => SignupScreen()));
   }
 
-  void _onTapForgotPasswordButton() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ForgotPasswordVerifyEmail()),
-    );
+  void _onTapEmailAddressButton() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => PinVerification()));
+  }
+
+  void _onTapLoginButton() {
+    Navigator.pop(context);
   }
 
   @override
   void dispose() {
     super.dispose();
     _emailTEController.dispose();
-    _passwordTEController.dispose();
   }
 }
