@@ -1,20 +1,19 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:task_manager2/ui/screens/forgot_password_verify_email_screen.dart';
-import 'package:task_manager2/ui/screens/main_navbar_holder_screen.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:task_manager2/ui/screens/reset_password_screen.dart';
 import 'package:task_manager2/ui/screens/signup_screen.dart';
 import 'package:task_manager2/ui/widgets/screen_%20background.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class PinVerification extends StatefulWidget {
+  const PinVerification({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<PinVerification> createState() => _PinVerificationState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailTEController = TextEditingController();
-  final TextEditingController _passwordTEController = TextEditingController();
+class _PinVerificationState extends State<PinVerification> {
+  final TextEditingController _pinTEController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -31,42 +30,47 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   const SizedBox(height: 80),
                   Text(
-                    "Get Started With",
+                    "Pin Verification",
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  const SizedBox(height: 20),
-                  TextFormField(
-                    controller: _emailTEController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: InputDecoration(hintText: "Email"),
-                  ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
 
-                  TextFormField(
-                    controller: _passwordTEController,
-                    obscureText: true,
-                    decoration: InputDecoration(hintText: "Password"),
+                  Text(
+                    "Enter the 6 digit verification code sent to your email address",
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: Colors.grey),
+                  ),
+                  const SizedBox(height: 20),
+                  PinCodeTextField(
+                    length: 6,
+                    obscureText: false,
+                    animationType: AnimationType.fade,
+                    keyboardType: TextInputType.number,
+                    pinTheme: PinTheme(
+                      shape: PinCodeFieldShape.box,
+                      borderRadius: BorderRadius.circular(5),
+                      fieldHeight: 50,
+                      fieldWidth: 40,
+                      activeFillColor: Colors.white,
+                    ),
+                    animationDuration: Duration(milliseconds: 300),
+                    // backgroundColor: Colors.blue.shade50,
+                    // enableActiveFill: true,
+                    controller: _pinTEController,
+                     appContext: context,
                   ),
 
                   const SizedBox(height: 30),
-
+          
                   FilledButton(
-                    onPressed: _onTapSigninButton,
+                    onPressed: _onTapPinVerification,
                     child: Icon((Icons.arrow_forward_ios_outlined)),
                   ),
-
+          
                   const SizedBox(height: 30),
-
+          
                   Center(
                     child: Column(
                       children: [
-                        TextButton(
-                          onPressed: _onTapForgotPasswordButton,
-                          child: Text(
-                            "Forgot Password?",
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                        ),
                         RichText(
                           text: TextSpan(
                             style: TextStyle(
@@ -78,8 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               TextSpan(
                                 text: "Sign Up",
                                 style: TextStyle(color: Colors.green),
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = _onTapSignupButton,
+                                recognizer: TapGestureRecognizer()..onTap = _onTapSignupButton
                               ),
                             ],
                           ),
@@ -95,33 +98,17 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-
   void _onTapSignupButton() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => SignupScreen()),
-    );
+    Navigator.push(context, MaterialPageRoute(builder: (context) => SignupScreen()));
   }
 
-  void _onTapSigninButton() {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => MainNavbarHolderScreen()),
-      (predicate) => false,
-    );
-  }
-
-  void _onTapForgotPasswordButton() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ForgotPasswordVerifyEmail()),
-    );
+  void _onTapPinVerification() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => ResetPassword()));
   }
 
   @override
   void dispose() {
     super.dispose();
-    _emailTEController.dispose();
-    _passwordTEController.dispose();
+    _pinTEController.dispose();
   }
 }
