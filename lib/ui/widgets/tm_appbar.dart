@@ -3,8 +3,10 @@ import 'package:task_manager2/ui/screens/update_profile_screen.dart';
 
 class TMAppbar extends StatelessWidget implements PreferredSizeWidget{
   const TMAppbar({
-    super.key,
+    super.key, this.fromUpdateProfile,
   });
+
+  final bool? fromUpdateProfile;
 
   @override
   Widget build(BuildContext context) {
@@ -12,6 +14,9 @@ class TMAppbar extends StatelessWidget implements PreferredSizeWidget{
       backgroundColor: Colors.green,
       title: GestureDetector(
         onTap: () {
+          if (fromUpdateProfile ?? false) {
+            return;
+          }
           Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateProfileScreen()));
         },
         child: Row(
