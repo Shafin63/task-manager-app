@@ -1,9 +1,14 @@
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:task_manager2/data/services/api_caller.dart';
+import 'package:task_manager2/data/utils/urls.dart';
 import 'package:task_manager2/ui/screens/forgot_password_verify_email_screen.dart';
 import 'package:task_manager2/ui/screens/main_navbar_holder_screen.dart';
 import 'package:task_manager2/ui/screens/signup_screen.dart';
 import 'package:task_manager2/ui/widgets/screen_%20background.dart';
+import 'package:task_manager2/ui/widgets/snack_bar_message.dart';
+import '../widgets/centered_circular_progress_indicator.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -11,6 +16,8 @@ class LoginScreen extends StatefulWidget {
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
+
+bool _loginInProgress = false;
 
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailTEController = TextEditingController();
@@ -26,6 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: const EdgeInsets.all(24),
             child: Form(
               key: _formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -36,6 +44,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 20),
                   TextFormField(
+                    validator: (String? value) {
+                      String inputText = value ?? "";
+                      if (EmailValidator.validate(inputText) == false) {
+                        return "Enter a valid email";
+                      }
+                      return null;
+                    },
                     controller: _emailTEController,
                     keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(hintText: "Email"),
@@ -43,6 +58,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 10),
 
                   TextFormField(
+                    validator: (String? value) {
+                      if ((value?.length ?? 0) <= 6) {
+                        return "Password should be more than 6 characters";
+                      }
+                      return null;
+                    },
                     controller: _passwordTEController,
                     obscureText: true,
                     decoration: InputDecoration(hintText: "Password"),
@@ -50,9 +71,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 30),
 
-                  FilledButton(
-                    onPressed: _onTapSigninButton,
-                    child: Icon((Icons.arrow_forward_ios_outlined)),
+                  Visibility(
+                    visible: _loginInProgress == false,
+                    replacement: CenteredProgressIndicator(),
+                    child: FilledButton(
+                      onPressed: _onTapSigninButton,
+                      child: Icon((Icons.arrow_forward_ios_outlined)),
+                    ),
                   ),
 
                   const SizedBox(height: 30),
@@ -104,11 +129,33 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _onTapSigninButton() {
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => MainNavbarHolderScreen()),
-      (predicate) => false,
+    if (_formKey.currentState!.validate()) {
+      _logIn();
+    }
+  }
+
+  Future<void> _logIn() async {
+    _loginInProgress = true;
+    setState(() {});
+    Map<String, dynamic> requestBody = {
+      "email": _emailTEController.text.trim(),
+      "password": _passwordTEController.text,
+    };
+    final ApiResponse response = await ApiCaller.postRequest(
+      url: urls.loginUrl,
+      body: requestBody,
     );
+    if (response.isSuccess && response.responseData['status'] == 'success') {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => MainNavbarHolderScreen()),
+        (predicate) => false,
+      );
+    } else {
+      _loginInProgress = false;
+      setState(() {});
+      showSnackBarMessage(context, response.errorMessage!);
+    }
   }
 
   void _onTapForgotPasswordButton() {
@@ -125,3 +172,4 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordTEController.dispose();
   }
 }
+

@@ -31,6 +31,7 @@ class ApiCaller {
           isSuccess: false,
           responseCode: statusCode,
           responseData: decodedData,
+          errorMessage: decodedData['data'],
         );
       }
     } on Exception catch (e) {
@@ -75,6 +76,7 @@ class ApiCaller {
           isSuccess: false,
           responseCode: statusCode,
           responseData: decodedData,
+          errorMessage: decodedData['data'],
         );
       }
     } on Exception catch (e) {

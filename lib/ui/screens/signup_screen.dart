@@ -84,7 +84,8 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   const SizedBox(height: 10),
 
-                  TextFormField(validator: (String? value) {
+                  TextFormField(
+                    validator: (String? value) {
                       if (value?.trim().isEmpty ?? true) {
                         return "Enter mobile number";
                       }
