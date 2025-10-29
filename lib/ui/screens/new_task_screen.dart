@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:task_manager2/data/models/task_status_count_model.dart';
+import 'package:task_manager2/data/services/api_caller.dart';
+import 'package:task_manager2/data/utils/urls.dart';
 import 'package:task_manager2/ui/screens/add_new_task_screen.dart';
+import 'package:task_manager2/ui/widgets/centered_circular_progress_indicator.dart';
+import 'package:task_manager2/ui/widgets/snack_bar_message.dart';
 
 import '../widgets/task_card.dart';
 import '../widgets/task_count_by_status_card.dart';
@@ -12,6 +17,34 @@ class NewTaskScreen extends StatefulWidget {
 }
 
 class _NewTaskScreenState extends State<NewTaskScreen> {
+  bool _getTaskStatusCountInProgress = false;
+  List<taskStatusCountModel> _taskStatusCountList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getAllTaskStatusCount();
+  }
+
+  Future<void> _getAllTaskStatusCount() async {
+    _getTaskStatusCountInProgress = true;
+    setState(() {});
+    final ApiResponse response = await ApiCaller.getRequest(
+      url: urls.taskStatusCountUrl,
+    );
+    if (response.isSuccess) {
+      List<taskStatusCountModel> list = [];
+      for (Map<String, dynamic> jsonData in response.responseData["data"]) {
+        list.add(taskStatusCountModel.fromJson(jsonData));
+      }
+      _taskStatusCountList = list;
+    } else {
+      return showSnackBarMessage(context, response.errorMessage!);
+    }
+    _getTaskStatusCountInProgress = false;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,21 +55,28 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
             SizedBox(height: 16),
             SizedBox(
               height: 90,
-              child: ListView.separated(
-                itemCount: 4,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index) {
-                  return TaskCountByStatusCard(title: 'New', count: 2);
-                },
-                separatorBuilder: (context, index) {
-                  return SizedBox(width: 6);
-                },
+              child: Visibility(
+                visible: _getTaskStatusCountInProgress == false,
+                replacement: CenteredProgressIndicator(),
+                child: ListView.separated(
+                  itemCount: _taskStatusCountList.length,
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    return TaskCountByStatusCard(
+                      title: _taskStatusCountList[index].status,
+                      count: _taskStatusCountList[index].count,
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return SizedBox(width: 6);
+                  },
+                ),
               ),
             ),
             Expanded(
               child: ListView.separated(
                 itemBuilder: (context, index) {
-                  return TaskCard(taskStatusType: 'New', color: Colors.blue,);
+                  return TaskCard(taskStatusType: 'New', color: Colors.blue);
                 },
                 separatorBuilder: (context, index) {
                   return SizedBox(height: 10);
@@ -55,6 +95,9 @@ class _NewTaskScreenState extends State<NewTaskScreen> {
   }
 
   void _onTapAddNewTaskButton() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => const AddNewTaskScreen()));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const AddNewTaskScreen()),
+    );
   }
 }
