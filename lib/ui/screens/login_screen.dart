@@ -1,8 +1,10 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:task_manager2/data/models/user_model.dart';
 import 'package:task_manager2/data/services/api_caller.dart';
 import 'package:task_manager2/data/utils/urls.dart';
+import 'package:task_manager2/ui/controllers/auth_controller.dart';
 import 'package:task_manager2/ui/screens/forgot_password_verify_email_screen.dart';
 import 'package:task_manager2/ui/screens/main_navbar_holder_screen.dart';
 import 'package:task_manager2/ui/screens/signup_screen.dart';
@@ -146,6 +148,11 @@ class _LoginScreenState extends State<LoginScreen> {
       body: requestBody,
     );
     if (response.isSuccess && response.responseData['status'] == 'success') {
+      UserModel model = UserModel.fromJson(response.responseData["data"]);
+      String accessToken = response.responseData["token"];
+
+      await AuthController.saveUserData(model, accessToken);
+      
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => MainNavbarHolderScreen()),
