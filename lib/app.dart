@@ -4,9 +4,12 @@ import 'package:task_manager2/ui/screens/splash_screen.dart';
 class TaskManagerApp extends StatelessWidget {
   const TaskManagerApp({super.key});
 
+  static GlobalKey<NavigatorState> navigator = GlobalKey<NavigatorState>();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigator,
       title: "Task Manager App",
       theme: ThemeData(
           colorSchemeSeed: Colors.green,

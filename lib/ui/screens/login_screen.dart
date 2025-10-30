@@ -152,7 +152,7 @@ class _LoginScreenState extends State<LoginScreen> {
       String accessToken = response.responseData["token"];
 
       await AuthController.saveUserData(model, accessToken);
-      
+
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => MainNavbarHolderScreen()),
@@ -179,4 +179,3 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordTEController.dispose();
   }
 }
-
