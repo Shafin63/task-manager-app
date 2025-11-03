@@ -12,6 +12,8 @@ class TaskManagerApp extends StatelessWidget {
       navigatorKey: navigator,
       title: "Task Manager App",
       theme: ThemeData(
+        useMaterial3: true,
+          sliderTheme: SliderThemeData(year2023: false),
           colorSchemeSeed: Colors.green,
           textTheme: TextTheme(
               titleLarge: TextStyle(

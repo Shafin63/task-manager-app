@@ -8,7 +8,12 @@ class CenteredProgressIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: CircularProgressIndicator(),
+      child: CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+        backgroundColor: Colors.grey[300],
+        strokeWidth: 6,
+      ),
     );
+
   }
 }

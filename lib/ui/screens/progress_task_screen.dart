@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-
+import '../../data/models/task_model.dart';
+import '../../data/services/api_caller.dart';
+import '../../data/utils/urls.dart';
+import '../widgets/centered_circular_progress_indicator.dart';
+import '../widgets/snack_bar_message.dart';
 import '../widgets/task_card.dart';
-import '../widgets/task_count_by_status_card.dart';
 
 class ProgressTaskScreen extends StatefulWidget {
   const ProgressTaskScreen({super.key});
@@ -11,28 +14,58 @@ class ProgressTaskScreen extends StatefulWidget {
 }
 
 class _ProgressTaskScreenState extends State<ProgressTaskScreen> {
+  bool _getProgressTaskInProgress = false;
+  List<TaskModel> _progressTaskList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getAllProgressTasks();
+  }
+
+  Future<void> _getAllProgressTasks() async {
+    _getProgressTaskInProgress = true;
+    setState(() {});
+    final ApiResponse response = await ApiCaller.getRequest(
+      url: urls.progressTaskListUrl,
+    );
+    if (response.isSuccess) {
+      List<TaskModel> list = [];
+      for (Map<String, dynamic> jsonData in response.responseData['data']) {
+        list.add(TaskModel.fromJson(jsonData));
+      }
+      _progressTaskList = list;
+    } else {
+      showSnackBarMessage(context, response.errorMessage!);
+    }
+    _getProgressTaskInProgress = false;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.separated(
-                itemBuilder: (context, index) {
-                  return TaskCard(taskStatusType: 'In Progress', color: Colors.purple,);
+        child: Visibility(
+          visible: _getProgressTaskInProgress == false,
+          replacement: CenteredProgressIndicator(),
+          child: ListView.separated(
+            itemCount: _progressTaskList.length,
+            itemBuilder: (context, index) {
+              return TaskCard(
+                taskModel: _progressTaskList[index],
+                refreshParent: () {
+                  _getAllProgressTasks();
                 },
-                separatorBuilder: (context, index) {
-                  return SizedBox(height: 10);
-                },
-                itemCount: 20,
-              ),
-            ),
-          ],
+              );
+            },
+            separatorBuilder: (context, index) {
+              return SizedBox(height: 8);
+            },
+          ),
         ),
       ),
-
     );
   }
 }

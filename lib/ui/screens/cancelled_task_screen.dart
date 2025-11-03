@@ -21,7 +21,7 @@ class _CancelledTaskScreenState extends State<CancelledTaskScreen> {
             Expanded(
               child: ListView.separated(
                 itemBuilder: (context, index) {
-                  return TaskCard(taskStatusType: 'Cancelled', color: Colors.red,);
+                  // return TaskCard(taskStatusType: 'Cancelled', color: Colors.red,);
                 },
                 separatorBuilder: (context, index) {
                   return SizedBox(height: 10);
