@@ -62,10 +62,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                   const SizedBox(height: 30),
                   Text(
                     "Update Profile",
-                    style: Theme
-                        .of(context)
-                        .textTheme
-                        .titleLarge,
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
                   const SizedBox(height: 30),
                   PhotoPickerField(
@@ -87,9 +84,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     textInputAction: TextInputAction.next,
                     decoration: InputDecoration(hintText: "First Name"),
                     validator: (String? value) {
-                      if (value
-                          ?.trim()
-                          .isEmpty ?? true) {
+                      if (value?.trim().isEmpty ?? true) {
                         return "Enter valid first name";
                       }
                       return null;
@@ -102,9 +97,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     textInputAction: TextInputAction.next,
                     decoration: InputDecoration(hintText: "Last Name"),
                     validator: (String? value) {
-                      if (value
-                          ?.trim()
-                          .isEmpty ?? true) {
+                      if (value?.trim().isEmpty ?? true) {
                         return "Enter valid last name";
                       }
                       return null;
@@ -118,9 +111,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                     keyboardType: TextInputType.number,
                     decoration: InputDecoration(hintText: "Mobile"),
                     validator: (String? value) {
-                      if (value
-                          ?.trim()
-                          .isEmpty ?? true) {
+                      if (value?.trim().isEmpty ?? true) {
                         return "Enter valid mobile number";
                       }
                       return null;
@@ -181,9 +172,11 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     if (_passwordTEController.text.isNotEmpty) {
       requestBody['password'] = _passwordTEController.text;
     }
+    String? encodedPhoto;
     if (_selectedImage != null) {
-      Uint8List bytes = await _selectedImage!.readAsBytes();
-      requestBody['photo'] = jsonEncode(bytes);
+      List<int> bytes = await _selectedImage!.readAsBytes();
+      encodedPhoto = jsonEncode(bytes);
+      requestBody['photo'] = encodedPhoto;
     }
     final ApiResponse response = await ApiCaller.postRequest(
       url: urls.updateProfileUrl,
@@ -194,11 +187,14 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
 
     if (response.isSuccess) {
       _passwordTEController.clear();
-      UserModel model = UserModel(id: AuthController.userModel!.id,
-          email: _emailTEController.text.trim(),
-          firstName: _firstNameTEController.text.trim(),
-          lastName: _lastNameTEController.text.trim(),
-          mobile: _mobileTEController.text.trim());
+      UserModel model = UserModel(
+        id: AuthController.userModel!.id,
+        email: _emailTEController.text.trim(),
+        firstName: _firstNameTEController.text.trim(),
+        lastName: _lastNameTEController.text.trim(),
+        mobile: _mobileTEController.text.trim(),
+        photo: encodedPhoto ?? AuthController.userModel!.photo,
+      );
       await AuthController.updateUserData(model);
       showSnackBarMessage(context, "Your profile has been updated");
     } else {
