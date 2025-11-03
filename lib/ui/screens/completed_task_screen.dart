@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../data/models/task_model.dart';
+import '../../data/services/api_caller.dart';
+import '../../data/utils/urls.dart';
+import '../widgets/snack_bar_message.dart';
 import '../widgets/task_card.dart';
 import '../widgets/task_count_by_status_card.dart';
 
@@ -11,6 +15,36 @@ class CompletedTaskScreen extends StatefulWidget {
 }
 
 class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
+
+  bool _getCompletedTaskInProgress = false;
+  List<TaskModel> _completedTaskList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getAllCompletedTasks();
+  }
+
+
+  Future<void> _getAllCompletedTasks() async {
+    _getCompletedTaskInProgress = true;
+    setState(() {});
+    final ApiResponse response = await ApiCaller.getRequest(
+      url: urls.completedTaskListUrl,
+    );
+    if (response.isSuccess) {
+      List<TaskModel> list = [];
+      for (Map<String, dynamic> jsonData in response.responseData['data']) {
+        list.add(TaskModel.fromJson(jsonData));
+      }
+      _completedTaskList = list;
+    } else {
+      showSnackBarMessage(context, response.errorMessage!);
+    }
+    _getCompletedTaskInProgress = false;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,12 +55,14 @@ class _CompletedTaskScreenState extends State<CompletedTaskScreen> {
             Expanded(
               child: ListView.separated(
                 itemBuilder: (context, index) {
-                  // return TaskCard(taskStatusType: 'Completed', color: Colors.green,);
+                  return TaskCard(taskModel: _completedTaskList[index], refreshParent: () {
+                    _getAllCompletedTasks();
+                  },);
                 },
                 separatorBuilder: (context, index) {
                   return SizedBox(height: 10);
                 },
-                itemCount: 20,
+                itemCount: _completedTaskList.length,
               ),
             ),
           ],

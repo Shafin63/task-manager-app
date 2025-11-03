@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../data/models/task_model.dart';
+import '../../data/services/api_caller.dart';
+import '../../data/utils/urls.dart';
+import '../widgets/snack_bar_message.dart';
 import '../widgets/task_card.dart';
 import '../widgets/task_count_by_status_card.dart';
 
@@ -11,6 +15,36 @@ class CancelledTaskScreen extends StatefulWidget {
 }
 
 class _CancelledTaskScreenState extends State<CancelledTaskScreen> {
+
+  bool _getCancelledTaskInProgress = false;
+  List<TaskModel> _cancelledTaskList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getAllCancelledTasks();
+  }
+
+
+  Future<void> _getAllCancelledTasks() async {
+    _getCancelledTaskInProgress = true;
+    setState(() {});
+    final ApiResponse response = await ApiCaller.getRequest(
+      url: urls.cancelledTaskListUrl,
+    );
+    if (response.isSuccess) {
+      List<TaskModel> list = [];
+      for (Map<String, dynamic> jsonData in response.responseData['data']) {
+        list.add(TaskModel.fromJson(jsonData));
+      }
+      _cancelledTaskList = list;
+    } else {
+      showSnackBarMessage(context, response.errorMessage!);
+    }
+    _getCancelledTaskInProgress = false;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,12 +55,14 @@ class _CancelledTaskScreenState extends State<CancelledTaskScreen> {
             Expanded(
               child: ListView.separated(
                 itemBuilder: (context, index) {
-                  // return TaskCard(taskStatusType: 'Cancelled', color: Colors.red,);
+                  return TaskCard(taskModel: _cancelledTaskList[index], refreshParent: () {
+                    _getAllCancelledTasks();
+                  },);
                 },
                 separatorBuilder: (context, index) {
                   return SizedBox(height: 10);
                 },
-                itemCount: 20,
+                itemCount: _cancelledTaskList.length,
               ),
             ),
           ],
