@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:task_manager2/ui/widgets/snack_bar_message.dart';
-
 import '../../data/models/task_model.dart';
 import '../../data/services/api_caller.dart';
 import '../../data/utils/urls.dart';
@@ -55,9 +54,7 @@ class _TaskCardState extends State<TaskCard> {
                 visible: _deleteInProgress == false,
                 replacement: CenteredProgressIndicator(),
                 child: IconButton(
-                  onPressed: () {
-                    // _deleteTask();
-                  },
+                  onPressed: deleteTask,
                   icon: Icon(Icons.delete, color: Colors.grey),
                 ),
               ),
@@ -144,6 +141,21 @@ class _TaskCardState extends State<TaskCard> {
       url: urls.updateTaskStatusUrl(widget.taskModel.id, status),
     );
     _changeStatusInProgress = false;
+    setState(() {});
+    if (response.isSuccess) {
+      widget.refreshParent();
+    } else {
+      showSnackBarMessage(context, response.errorMessage!);
+    }
+  }
+
+  Future<void> deleteTask() async {
+    _deleteInProgress = true;
+    setState(() {});
+    final ApiResponse response = await ApiCaller.getRequest(
+      url: urls.deleteTaskUrl(widget.taskModel.id),
+    );
+    _deleteInProgress = false;
     setState(() {});
     if (response.isSuccess) {
       widget.refreshParent();
