@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import '../../data/models/user_model.dart';
 import '../../data/services/api_caller.dart';
 import '../../data/utils/urls.dart';
-import '../screens/main_navbar_holder_screen.dart';
-import '../widgets/snack_bar_message.dart';
 import 'auth_controller.dart';
 
 class LoginProvider extends ChangeNotifier {
@@ -34,7 +32,6 @@ class LoginProvider extends ChangeNotifier {
       await AuthController.saveUserData(model, accessToken);
       _errorMessage = null;
       isSuccess = true;
-
     } else {
       _errorMessage = response.errorMessage!;
     }

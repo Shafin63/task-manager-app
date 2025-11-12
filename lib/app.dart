@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:task_manager2/ui/controllers/login_provider.dart';
 import 'package:task_manager2/ui/screens/splash_screen.dart';
 
 class TaskManagerApp extends StatelessWidget {
@@ -10,45 +9,37 @@ class TaskManagerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => LoginProvider()),
-      ],
-      child: MaterialApp(
-        navigatorKey: navigator,
-        title: "Task Manager App",
-        theme: ThemeData(
-          useMaterial3: true,
-            sliderTheme: SliderThemeData(year2023: false),
-            colorSchemeSeed: Colors.green,
-            textTheme: TextTheme(
-                titleLarge: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w600
-                )
-            ),
-            inputDecorationTheme: InputDecorationTheme(
-              hintStyle: TextStyle(color: Colors.grey),
-              filled: true,
-              fillColor: Colors.white,
-              contentPadding: EdgeInsets.symmetric(horizontal: 16),
-              border: OutlineInputBorder(borderSide: BorderSide.none),
-              enabledBorder: OutlineInputBorder(borderSide: BorderSide.none),
-              errorBorder: OutlineInputBorder(borderSide: BorderSide.none),
-            ),
-            filledButtonTheme: FilledButtonThemeData(
-              style: FilledButton.styleFrom(
-                backgroundColor: Colors.green,
-                fixedSize: Size.fromWidth(double.maxFinite),
-                padding: EdgeInsets.symmetric(vertical: 10),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            )
+    return MaterialApp(
+      navigatorKey: navigator,
+      title: "Task Manager App",
+      theme: ThemeData(
+        useMaterial3: true,
+        sliderTheme: SliderThemeData(year2023: false),
+        colorSchemeSeed: Colors.green,
+        textTheme: TextTheme(
+          titleLarge: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
         ),
-        home: const SplashScreen(),
+        inputDecorationTheme: InputDecorationTheme(
+          hintStyle: TextStyle(color: Colors.grey),
+          filled: true,
+          fillColor: Colors.white,
+          contentPadding: EdgeInsets.symmetric(horizontal: 16),
+          border: OutlineInputBorder(borderSide: BorderSide.none),
+          enabledBorder: OutlineInputBorder(borderSide: BorderSide.none),
+          errorBorder: OutlineInputBorder(borderSide: BorderSide.none),
+        ),
+        filledButtonTheme: FilledButtonThemeData(
+          style: FilledButton.styleFrom(
+            backgroundColor: Colors.green,
+            fixedSize: Size.fromWidth(double.maxFinite),
+            padding: EdgeInsets.symmetric(vertical: 10),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        ),
       ),
+      home: const SplashScreen(),
     );
   }
 }
